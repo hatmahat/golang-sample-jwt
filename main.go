@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"net/http"
@@ -89,4 +90,20 @@ func GenerateToken(userName string, email string) (string, error) {
 		JwtSigninMethod,
 		claims)
 	return token.SignedString(JwtSignatureKey)
+}
+
+func ParseToke(tokenString string) (jwt.MapClaims, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if method, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("signin method invalid")
+		} else if method != JwtSigninMethod {
+			return nil, fmt.Errorf("signin method invalid")
+		}
+		return JwtSignatureKey, nil
+	})
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return nil, err
+	}
+	return claims, nil
 }
