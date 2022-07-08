@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 	"net/http"
 )
 
@@ -12,6 +13,18 @@ type AuthHeader struct {
 type Credential struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+var (
+	ApplicationName = "Enigma"
+	JwtSigninMethod = jwt.SigningMethodES256
+	JwtSignatureKey = []byte("3N!GM4")
+)
+
+type MyClaims struct {
+	jwt.StandardClaims
+	Username string `json:"username"`
+	Email    string `json:"email"`
 }
 
 func main() {
@@ -62,4 +75,18 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func GenerateToken(userName string, email string) (string, error) {
+	claims := MyClaims{
+		StandardClaims: jwt.StandardClaims{
+			Issuer: ApplicationName,
+		},
+		Username: userName,
+		Email:    email,
+	}
+	token := jwt.NewWithClaims(
+		JwtSigninMethod,
+		claims)
+	return token.SignedString(JwtSignatureKey)
 }
