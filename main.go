@@ -46,6 +46,7 @@ func main() {
 			token, err := GenerateToken(user.Username, "admin@enigmacamp.com")
 			if err != nil {
 				c.AbortWithStatus(http.StatusUnauthorized)
+				return
 			}
 			c.JSON(http.StatusOK, gin.H{
 				"token": token,
@@ -56,42 +57,50 @@ func main() {
 	})
 
 	routerGroup.GET("/customer", func(ctx *gin.Context) {
-		authHeader := AuthHeader{}
-		if err := ctx.ShouldBindHeader(&authHeader); err != nil {
-			ctx.JSON(http.StatusUnauthorized, gin.H{
-				"message": "Unauthorized",
-			})
-			return
-		}
+		// authHeader := AuthHeader{}
+		// if err := ctx.ShouldBindHeader(&authHeader); err != nil {
+		// 	ctx.JSON(http.StatusUnauthorized, gin.H{
+		// 		"message": "Unauthorized",
+		// 	})
+		// 	return
+		// }
 
-		if authHeader.Authorization == "87654321" {
-			ctx.JSON(http.StatusOK, gin.H{
-				"message": "customer",
-			})
-			return
-		}
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"message": "token invalid",
+		// if authHeader.Authorization == "87654321" {
+		// 	ctx.JSON(http.StatusOK, gin.H{
+		// 		"message": "customer",
+		// 	})
+		// 	return
+		// }
+		// ctx.JSON(http.StatusUnauthorized, gin.H{
+		// 	"message": "token invalid",
+		// })
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "customer",
 		})
 	})
 
 	routerGroup.GET("/product", func(ctx *gin.Context) {
-		authHeader := AuthHeader{}
-		if err := ctx.ShouldBindHeader(&authHeader); err != nil {
-			ctx.JSON(http.StatusUnauthorized, gin.H{
-				"message": "Unauthorized",
-			})
-			return
-		}
+		// authHeader := AuthHeader{}
+		// if err := ctx.ShouldBindHeader(&authHeader); err != nil {
+		// 	ctx.JSON(http.StatusUnauthorized, gin.H{
+		// 		"message": "Unauthorized",
+		// 	})
+		// 	return
+		// }
 
-		if authHeader.Authorization == "87654321" {
-			ctx.JSON(http.StatusOK, gin.H{
-				"message": "product",
-			})
-			return
-		}
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"message": "token invalid",
+		// if authHeader.Authorization == "87654321" {
+		// 	ctx.JSON(http.StatusOK, gin.H{
+		// 		"message": "product",
+		// 	})
+		// 	return
+		// }
+		// ctx.JSON(http.StatusUnauthorized, gin.H{
+		// 	"message": "token invalid",
+		// })
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "prduct",
 		})
 	})
 
