@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	"net/http"
 )
 
 type AuthHeader struct {
@@ -80,7 +81,26 @@ func main() {
 
 func AuthTokenMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if c.Request.URL.Path == ''
+		if c.Request.URL.Path == "/api/auth/login" {
+			c.Next()
+			fmt.Println("sss")
+		} else {
+			h := AuthHeader{}
+			if err := c.ShouldBindHeader(&h); err != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"message": "Unauthorized",
+				})
+				c.Abort()
+			}
+			if h.AuthorizationHeader == "123456" {
+				c.Next()
+			} else {
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"message": "token invalid",
+				})
+				c.Abort()
+			}
+		}
 	}
 }
 
