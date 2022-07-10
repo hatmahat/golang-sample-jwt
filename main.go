@@ -78,6 +78,12 @@ func main() {
 	}
 }
 
+func AuthTokenMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if c.Request.URL.Path == ''
+	}
+}
+
 func GenerateToken(userName string, email string) (string, error) {
 	claims := MyClaims{
 		StandardClaims: jwt.StandardClaims{
