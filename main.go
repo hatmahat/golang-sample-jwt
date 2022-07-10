@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
@@ -92,13 +93,34 @@ func AuthTokenMiddleware() gin.HandlerFunc {
 				})
 				c.Abort()
 			}
+
+			tokenString := strings.Replace(h.AuthorizationHeader, "Bearer", "", -1)
+			fmt.Println("tokenString: ", tokenString)
 			if h.AuthorizationHeader == "123456" {
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"message": "Unauthorized",
+				})
+				c.Abort()
+				return
+			}
+
+			token, err := ParseToken(tokenString)
+			if err != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"message": "Unauthorized",
+				})
+				c.Abort()
+				return
+			}
+			fmt.Println("token: ", token)
+			if token["iss"] == ApplicationName {
 				c.Next()
 			} else {
 				c.JSON(http.StatusUnauthorized, gin.H{
-					"message": "token invalid",
+					"message": "Unauthorized",
 				})
 				c.Abort()
+				return
 			}
 		}
 	}
@@ -118,7 +140,7 @@ func GenerateToken(userName string, email string) (string, error) {
 	return token.SignedString(JwtSignatureKey)
 }
 
-func ParseToke(tokenString string) (jwt.MapClaims, error) {
+func ParseToken(tokenString string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if method, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("signin method invalid")
