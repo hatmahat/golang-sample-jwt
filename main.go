@@ -34,6 +34,27 @@ func main() {
 	routerEngine := gin.Default()
 	routerGroup := routerEngine.Group("/api")
 
+	routerGroup.POST("/auth/login", func(c *gin.Context) {
+		var user Credential
+		if err := c.BindJSON(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "can't bind struct",
+			})
+			return
+		}
+		if user.Username == "enigma" && user.Password == "123" {
+			token, err := GenerateToken(user.Username, "admin@enigmacamp.com")
+			if err != nil {
+				c.AbortWithStatus(http.StatusUnauthorized)
+			}
+			c.JSON(http.StatusOK, gin.H{
+				"token": token,
+			})
+		} else {
+			c.AbortWithStatus(http.StatusUnauthorized)
+		}
+	})
+
 	routerGroup.GET("/customer", func(ctx *gin.Context) {
 		authHeader := AuthHeader{}
 		if err := ctx.ShouldBindHeader(&authHeader); err != nil {
