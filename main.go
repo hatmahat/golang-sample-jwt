@@ -10,7 +10,7 @@ import (
 )
 
 type AuthHeader struct {
-	Authorization string `header:"Authorization"`
+	AuthorizationHeader string `header:"Authorization"`
 }
 
 type Credential struct {
