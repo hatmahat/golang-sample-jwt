@@ -13,22 +13,22 @@ type AuthHeader struct {
 	AuthorizationHeader string `header:"Authorization"`
 }
 
-type Credential struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
+//type Credential struct {
+//	Username string `json:"username"`
+//	Password string `json:"password"`
+//}
+//
+//var (
+//	ApplicationName = "Enigma"
+//	JwtSinginMethod = jwt.SigningMethodHS256
+//	JwtSignatureKey = []byte("3N!GM4")
+//)
 
-var (
-	ApplicationName = "Enigma"
-	JwtSigninMethod = jwt.SigningMethodES256
-	JwtSignatureKey = []byte("3N!GM4")
-)
-
-type MyClaims struct {
-	jwt.StandardClaims
-	Username string `json:"username"`
-	Email    string `json:"email"`
-}
+//type MyClaims struct {
+//	jwt.StandardClaims
+//	Username string `json:"username"`
+//	Email    string `json:"email"`
+//}
 
 func main() {
 	routerEngine := gin.Default()
@@ -156,25 +156,11 @@ func AuthTokenMiddleware() gin.HandlerFunc {
 	}
 }
 
-func GenerateToken(userName string, email string) (string, error) {
-	claims := MyClaims{
-		StandardClaims: jwt.StandardClaims{
-			Issuer: ApplicationName,
-		},
-		Username: userName,
-		Email:    email,
-	}
-	token := jwt.NewWithClaims(
-		JwtSigninMethod,
-		claims)
-	return token.SignedString(JwtSignatureKey)
-}
-
 func ParseToken(tokenString string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if method, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("signin method invalid")
-		} else if method != JwtSigninMethod {
+		} else if method != JwtSinginMethod {
 			return nil, fmt.Errorf("signin method invalid")
 		}
 		return JwtSignatureKey, nil
