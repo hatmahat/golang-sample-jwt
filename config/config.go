@@ -1,8 +1,10 @@
 package config
 
 import (
-	"github.com/golang-jwt/jwt"
 	"time"
+
+	"github.com/go-redis/redis"
+	"github.com/golang-jwt/jwt"
 )
 
 type TokenConfig struct {
@@ -10,6 +12,7 @@ type TokenConfig struct {
 	JwtSigningMethod    *jwt.SigningMethodHMAC
 	JwtSignatureKey     string
 	AccessTokenLifeTime time.Duration
+	Client              *redis.Client
 }
 
 type Config struct {

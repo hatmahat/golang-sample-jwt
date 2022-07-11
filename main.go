@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	//"github.com/go-redis/redis"
 )
 
 type AuthHeader struct {
@@ -33,6 +34,14 @@ type AuthHeader struct {
 
 func main() {
 	routerEngine := gin.Default()
+
+	// redis config
+	// client := redis.NewClient(&redis.Options{
+	// 	Addr:     "localhost",
+	// 	Password: "",
+	// 	DB:       0,
+	// })
+
 	cfg := config.NewConfig()
 	tokenService := utils.NewTokenService(cfg.TokenConfig)
 	routerGroup := routerEngine.Group("/api")
@@ -50,6 +59,7 @@ func main() {
 				c.AbortWithStatus(http.StatusUnauthorized)
 				return
 			}
+			err = tokenService.StoreAccessToken(user.Username, token)
 			c.JSON(http.StatusOK, gin.H{
 				"token": token,
 			})
@@ -61,13 +71,13 @@ func main() {
 	protectedGroup := routerGroup.Group("/master", middleware.NewTokenValidator(tokenService).RequireToken())
 	protectedGroup.GET("/customer", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
-			"message": "customer",
+			"message": ctx.Get("user-id"),
 		})
 	})
 
 	protectedGroup.GET("/product", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
-			"message": "prduct",
+			"message": ctx.Get("user-id"),
 		})
 	})
 
