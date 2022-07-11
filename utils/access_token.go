@@ -38,7 +38,7 @@ func (t *token) CreateAccessToken(cred *model.Credential) (string, error) {
 }
 
 func (t *token) VerifyAccessToken(tokenString string) (jwt.MapClaims, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, errors) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if method, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("signin method invalid")
 		} else if method != t.cfg.JwtSigningMethod {
