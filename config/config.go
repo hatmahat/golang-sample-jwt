@@ -3,7 +3,7 @@ package config
 import (
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/golang-jwt/jwt"
 )
 
@@ -24,7 +24,7 @@ func (c Config) readConfig() Config {
 		ApplicationName:     "ENIGMA",
 		JwtSigningMethod:    jwt.SigningMethodHS256,
 		JwtSignatureKey:     "3N!GM4",
-		AccessTokenLifeTime: 60 * time.Second,
+		AccessTokenLifeTime: 10 * time.Second,
 	}
 	return c
 }

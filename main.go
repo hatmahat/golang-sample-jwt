@@ -77,7 +77,7 @@ func main() {
 
 	protectedGroup.GET("/product", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
-			"message": ctx.Get("user-id"),
+			"message": "product",
 		})
 	})
 

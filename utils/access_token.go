@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"golang-sample-jwt/config"
 	"golang-sample-jwt/model"
+	"log"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -75,7 +76,24 @@ func (t *token) CreateAccessToken(cred *model.Credential) (*model.TokenDetails, 
 	return td, nil
 }
 
-func (t *token) VerifyAccessToken(tokenString string) (jwt.MapClaims, error) {
+// func (t *token) VerifyAccessToken(tokenString string) (jwt.MapClaims, error) {
+// 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+// 		if method, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+// 			return nil, fmt.Errorf("signing method invalid")
+// 		} else if method != t.cfg.JwtSigningMethod {
+// 			return nil, fmt.Errorf("signing method invalid")
+// 		}
+// 		return []byte(t.cfg.JwtSignatureKey), nil
+// 	})
+// 	fmt.Println("di access token: ", err)
+// 	claims, ok := token.Claims.(jwt.MapClaims)
+// 	if !ok || !token.Valid || claims["iss"] != t.cfg.ApplicationName {
+// 		return nil, err
+// 	}
+// 	return claims, nil
+// }
+
+func (t *token) VerifyAccessToken(tokenString string) (*model.AccessDetail, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if method, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("signing method invalid")
@@ -84,12 +102,18 @@ func (t *token) VerifyAccessToken(tokenString string) (jwt.MapClaims, error) {
 		}
 		return []byte(t.cfg.JwtSignatureKey), nil
 	})
-	fmt.Println("di access token: ", err)
+
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid || claims["iss"] != t.cfg.ApplicationName {
+		log.Println("Token Invalid")
 		return nil, err
 	}
-	return claims, nil
+	accessUuid := claims["AccessUUID"].(string)
+	username := claims["Username"].(string)
+	return &model.AccessDetail{
+		AccessUuid: accessUuid,
+		Username:   username,
+	}, nil
 }
 
 func NewTokenService(cfg config.TokenConfig) Token {
